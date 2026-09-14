@@ -2,29 +2,89 @@
 
 Ask plain-English pipeline questions. Every answer shows its source rows, formulas, assumptions and trust flags, so it can be recomputed by hand.
 
-## Run
+## Open the app in your browser
+
+The app runs on your own computer and opens in your web browser. The terminal is only used to start it; everything else happens in the browser. Setup takes about 3 minutes.
+
+### 1. Check you have Python 3.9 or newer
+
+Open a terminal (**Mac:** Terminal app. **Windows:** PowerShell) and run:
+
+| Mac | Windows |
+|---|---|
+| `python3 --version` | `py --version` |
+
+If it prints `Python 3.9` or higher, continue. If not, install Python from https://www.python.org/downloads/ (on Windows, tick **"Add python.exe to PATH"** during install), then open a new terminal.
+
+### 2. Go to the unzipped folder
+
+Unzip the download. The folder is usually named `meridian-pipeline-main`. In the terminal, type `cd ` (with a space), drag the folder into the terminal window, and press Enter. For example:
 
 ```bash
-pip install -r requirements.txt
-python3 app.py                       # http://127.0.0.1:8765
-pip install pytest && python3 -m pytest -q   # 142 tests
+cd ~/Downloads/meridian-pipeline-main
 ```
 
-No API key needed. `python3 ask.py "Why is Priya at risk?"` gives the same answers in the terminal.
+### 3. Install, then start the app
+
+Copy and paste these lines one at a time.
+
+**Mac:**
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python app.py
+```
+
+**Windows (PowerShell):**
+
+```powershell
+py -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+python app.py
+```
+
+The first line creates a private Python environment inside the folder, so nothing is installed system-wide. The install step downloads pandas and takes about a minute.
+
+### 4. Use the app
+
+Your browser opens automatically at **http://127.0.0.1:8765**. If it doesn't, copy that address into your browser.
+
+- The page opens on **The $1.99 M Bridge**, a reconciliation of the two data extracts.
+- Click any suggested question on the left, or type your own.
+- In each answer, click `[A]`-style links and deal IDs to see the exact source rows.
+
+Leave the terminal window open while you use the app. To stop it, click the terminal and press **Ctrl+C**.
+
+**To open it again later:** go to the folder (step 2), then run `source .venv/bin/activate` (Mac) or `.venv\Scripts\Activate.ps1` (Windows), then `python app.py`.
+
+### If something goes wrong
+
+| Problem | Fix |
+|---|---|
+| `command not found: python3` or `py` | Install Python (step 1) and open a new terminal. |
+| Windows: "running scripts is disabled" | Run `Set-ExecutionPolicy -Scope Process Bypass`, then activate again. |
+| `Address already in use` | Another program is using the port. Run `python app.py --port 9000` and open http://127.0.0.1:9000. |
+| The browser didn't open | Copy http://127.0.0.1:8765 into your browser. |
+| `pip install` fails | Run `python -m pip install --upgrade pip`, then try again. |
+
+The app needs no API key and no internet connection once installed. It is only reachable from your own computer.
 
 ## How it works
 
-1. **Parse** (`query.py`): question → raw query, fields as written.
+1. **Parse** (`query.py`): question → structured query, fields as written.
 2. **Validate** (`validate.py`): check against the roster and `snapshots.json`, or reject with every problem listed. No deal data read yet.
 3. **Select** (`selection.py`): rows chosen by readable filters; bad rows set aside, never counted.
 4. **Compute** (`metrics.py`): figures, formulas, assumptions, flags.
 5. **Render** (`serialize.py`): JSON for the page, which formats and computes nothing itself.
 
-If `ANTHROPIC_API_KEY` is set, Claude fills step 1 only and never sees a deal value.
+If `ANTHROPIC_API_KEY` is set, Claude fills step 1 only and never sees a deal value. By default a rule-based parser is used.
 
 ## Key finding: Q1 isn't final
 
-The two extracts disagree on Q1 bookings: $6,041,000 at Q1 close vs $4,050,000 on 2026-05-02. The app's opening page reconciles the $1,991,000 to the dollar (recycled IDs, slipped close dates, reversals). Closed quarters are read from the close extract; Q2 from the latest.
+The two extracts disagree on Q1 bookings: $6,041,000 at Q1 close vs $4,050,000 on 2026-05-02. The app's opening page reconciles the $1,991,000 to the dollar (reused IDs, moved close dates, reversals). Closed quarters are read from the close extract; Q2 from the latest.
 
 ## Core queries
 
@@ -38,6 +98,10 @@ The two extracts disagree on Q1 bookings: $6,041,000 at Q1 close vs $4,050,000 o
 - "Same point" = same elapsed day of each quarter.
 - "At risk" = closed-won + open pipeline below quota; pipeline not probability-weighted.
 - Missing data is never treated as zero: figures become "at least" or "undefined".
+
+## Tests
+
+With the environment active: `pip install pytest`, then `python -m pytest -q` (142 tests).
 
 ## Deploy (Fly.io)
 

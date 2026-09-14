@@ -1,7 +1,7 @@
 FROM python:3.12-slim
 WORKDIR /app
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt "pandas==2.3.3" "numpy==2.3.5"
 COPY app.py ask.py snapshots.json ./
 COPY meridian meridian
 COPY web/index.html web/index.html
