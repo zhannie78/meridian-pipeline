@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meridian Pipeline Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@500;600&display=swap">
+<style>
+  :root{
+    --ground:#F3F5F4; --surface:#FFFFFF; --surface-2:#EDF1EF; --surface-3:#E3E9E6;
+    --ink:#14201B; --soft:#53605B; --faint:#86918C; --rule:#DAE0DC; --rule-strong:#BFC9C4;
+    --accent:#0E5F5A; --accent-ink:#FFFFFF; --accent-soft:#DFEDEA;
+    --crit:#A0342A; --crit-soft:#F7E6E3; --warn:#855C0C; --warn-soft:#F6EDD8; --ok:#2D6A45; --ok-soft:#E2EFE6;
+    --code-bg:#14201B; --code-ink:#E6ECE9;
+    --serif:"IBM Plex Serif",Georgia,"Times New Roman",serif;
+    --sans:"IBM Plex Sans",-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
+    --mono:"IBM Plex Mono","SF Mono",Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --ground:#0F1513; --surface:#161F1D; --surface-2:#1C2725; --surface-3:#24312E;
+      --ink:#E6ECE9; --soft:#A3B0AB; --faint:#76827D; --rule:#293431; --rule-strong:#3A4744;
+      --accent:#56B8AC; --accent-ink:#0B1412; --accent-soft:#16312E;
+      --crit:#E78A7A; --crit-soft:#34201C; --warn:#D9A742; --warn-soft:#30281A; --ok:#7CC697; --ok-soft:#172C20;
+      --code-bg:#0A0F0E; --code-ink:#DCE5E1;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#0F1513; --surface:#161F1D; --surface-2:#1C2725; --surface-3:#24312E;
+    --ink:#E6ECE9; --soft:#A3B0AB; --faint:#76827D; --rule:#293431; --rule-strong:#3A4744;
+    --accent:#56B8AC; --accent-ink:#0B1412; --accent-soft:#16312E;
+    --crit:#E78A7A; --crit-soft:#34201C; --warn:#D9A742; --warn-soft:#30281A; --ok:#7CC697; --ok-soft:#172C20;
+    --code-bg:#0A0F0E; --code-ink:#DCE5E1;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth; scroll-padding-top:72px}
+  body{margin:0; background:var(--ground); color:var(--ink); font:16px/1.6 var(--sans); padding-inline:16px}
+  a{color:var(--accent)}
+  code{font-family:var(--mono); font-size:.88em; background:var(--surface-2); padding:1px 5px; border:1px solid var(--rule)}
+  .page{max-width:1040px; margin:0 auto; padding-block:0 80px}
+
+  /* header */
+  header.top{padding-block:44px 28px}
+  .eyebrow{font-family:var(--mono); font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--accent); margin:0 0 10px}
+  h1{font-family:var(--serif); font-weight:600; font-size:clamp(32px,5vw,50px); line-height:1.08; letter-spacing:-.02em; margin:0 0 14px; text-wrap:balance}
+  .lede{font-size:clamp(17px,2vw,20px); color:var(--soft); max-width:62ch; margin:0 0 22px}
+  .badges{display:flex; flex-wrap:wrap; gap:8px}
+  .badge{font-family:var(--mono); font-size:12.5px; background:var(--surface); border:1px solid var(--rule); padding:5px 10px}
+  .badge b{color:var(--accent); font-weight:600}
+
+  nav.jump{position:sticky; top:0; z-index:5; background:color-mix(in srgb, var(--ground) 92%, transparent); backdrop-filter:blur(6px); border-block:1px solid var(--rule); margin-bottom:28px}
+  nav.jump ul{list-style:none; margin:0 auto; padding:10px 0; display:flex; gap:6px 18px; flex-wrap:wrap; max-width:1040px; font-size:14px}
+  nav.jump a{color:var(--soft); text-decoration:none; white-space:nowrap}
+  nav.jump a:hover{color:var(--accent)}
+  nav.jump .for{font-family:var(--mono); font-size:11px; color:var(--faint); letter-spacing:.08em; text-transform:uppercase; align-self:center}
+
+  section.block{background:var(--surface); border:1px solid var(--rule); padding:clamp(22px,4vw,44px); margin-bottom:24px}
+  section.block > h2{font-family:var(--serif); font-weight:600; font-size:clamp(24px,3vw,32px); line-height:1.2; margin:0 0 8px; text-wrap:balance}
+  .kicker{font-family:var(--mono); font-size:11.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--faint); margin:0 0 6px}
+  .intro{font-size:17px; color:var(--soft); max-width:68ch; margin:0 0 26px}
+  h3{font-size:19px; margin:34px 0 10px; line-height:1.3}
+  p{margin:0 0 14px; max-width:72ch}
+
+  /* start-here */
+  .options{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px; margin-bottom:34px}
+  .option{border:1px solid var(--rule); background:var(--surface-2); padding:18px 20px}
+  .option h4{margin:0 0 6px; font-size:16px}
+  .option p{margin:0; font-size:14.5px; color:var(--soft)}
+  .option .tag{display:inline-block; font-family:var(--mono); font-size:11px; letter-spacing:.06em; text-transform:uppercase; padding:1px 7px; margin-bottom:8px; background:var(--accent-soft); color:var(--accent)}
+
+  .os{display:inline-flex; border:1px solid var(--rule-strong); margin:4px 0 18px}
+  .os button{font:inherit; font-size:14.5px; background:var(--surface); color:var(--soft); border:0; padding:8px 18px; cursor:pointer}
+  .os button + button{border-left:1px solid var(--rule-strong)}
+  .os button[aria-pressed="true"]{background:var(--ink); color:var(--surface)}
+  .os button:focus-visible,.copy:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+
+  ol.steps{list-style:none; margin:0; padding:0; counter-reset:step}
+  ol.steps > li{counter-increment:step; position:relative; padding:0 0 30px 62px; border-left:2px solid var(--rule); margin-left:20px}
+  ol.steps > li:last-child{border-left-color:transparent; padding-bottom:0}
+  ol.steps > li::before{content:counter(step); position:absolute; left:-21px; top:-2px; width:40px; height:40px; display:grid; place-items:center; background:var(--accent); color:var(--accent-ink); font-family:var(--serif); font-weight:600; font-size:19px; border-radius:50%}
+  ol.steps h4{margin:4px 0 6px; font-size:18px}
+  ol.steps p{color:var(--ink)}
+  .why{font-size:14.5px; color:var(--soft); background:var(--surface-2); border-left:3px solid var(--rule-strong); padding:8px 12px; margin:10px 0 0; max-width:68ch}
+  .why b{color:var(--ink)}
+  .see{font-size:14.5px; color:var(--ok); background:var(--ok-soft); padding:8px 12px; margin:10px 0 0; max-width:68ch}
+  .see b{color:var(--ok)}
+
+  .cmd{position:relative; background:var(--code-bg); color:var(--code-ink); font-family:"SF Mono",Menlo,Consolas,"Courier New",monospace; font-size:14.5px; line-height:1.55; margin:10px 0 0; max-width:680px}
+  .cmd pre{margin:0; padding:14px 90px 14px 16px; overflow-x:auto; white-space:pre}
+  .cmd .copy{position:absolute; top:8px; right:8px; font:inherit; font-size:12px; background:transparent; color:var(--code-ink); border:1px solid #4A5753; padding:3px 10px; cursor:pointer}
+  .cmd .copy:hover{border-color:var(--code-ink)}
+  .cmd .note{display:block; color:#8FA09A}
+  kbd{font-family:var(--mono); font-size:.85em; border:1px solid var(--rule-strong); border-bottom-width:2px; padding:0 6px; background:var(--surface)}
+
+  .tw{overflow-x:auto; border:1px solid var(--rule); margin:12px 0 4px}
+  table{border-collapse:collapse; width:100%; font-size:15px; line-height:1.45}
+  th,td{text-align:left; vertical-align:top; padding:10px 14px; border-bottom:1px solid var(--rule)}
+  th{background:var(--surface-2); font-family:var(--mono); font-size:11.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--soft); font-weight:600}
+  tbody tr:last-child td{border-bottom:0}
+  td.n{text-align:right; font-family:var(--mono); font-variant-numeric:tabular-nums; white-space:nowrap}
+
+  /* tour */
+  .tour{display:grid; gap:12px; counter-reset:t}
+  .stop{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.3fr); gap:6px 26px; border:1px solid var(--rule); padding:16px 20px}
+  @media(max-width:720px){ .stop{grid-template-columns:1fr} }
+  .stop .click{font-weight:600}
+  .stop .click small{display:block; font-family:var(--mono); font-weight:400; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--faint); margin-bottom:2px}
+  .stop .notice{color:var(--soft); font-size:15px}
+  .q{font-family:var(--serif); font-style:italic}
+
+  /* trust */
+  .trust{display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:14px}
+  .card{border:1px solid var(--rule); padding:18px 20px 16px; display:flex; flex-direction:column; gap:8px}
+  .card h4{margin:0; font-size:17px; line-height:1.3}
+  .card .lbl{font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--faint); margin:4px 0 -4px}
+  .card p{margin:0; font-size:15px}
+  .card .inapp{color:var(--accent)}
+  .callout{border:1px solid var(--rule); background:var(--surface-2); padding:18px 22px; margin:22px 0 0}
+  .callout h4{margin:0 0 8px; font-size:16px}
+  .callout ul{margin:0; padding-left:20px}
+  .callout li{margin:5px 0; max-width:74ch}
+  .contrast{display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--rule); border:1px solid var(--rule); margin:18px 0 8px}
+  @media(max-width:720px){ .contrast{grid-template-columns:1fr} }
+  .contrast div{background:var(--surface); padding:16px 18px}
+  .contrast .who{font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; margin:0 0 6px}
+  .contrast .bad .who{color:var(--crit)} .contrast .good .who{color:var(--ok)}
+  .contrast q{font-family:var(--serif); font-size:17px; quotes:"\201C" "\201D"}
+
+  .figs{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1px; background:var(--rule); border:1px solid var(--rule); margin:16px 0 18px}
+  .figs div{background:var(--surface); padding:14px 16px}
+  .figs .big{font-family:var(--serif); font-weight:600; font-size:28px; letter-spacing:-.01em; font-variant-numeric:tabular-nums}
+  .figs .sub{font-size:13.5px; color:var(--soft)}
+
+  dl.gloss{display:grid; grid-template-columns:minmax(140px,220px) minmax(0,1fr); gap:10px 22px; margin:0}
+  @media(max-width:600px){ dl.gloss{grid-template-columns:1fr; gap:2px} dl.gloss dd{margin-bottom:10px} }
+  dl.gloss dt{font-weight:600}
+  dl.gloss dd{margin:0; color:var(--soft)}
+
+  .tech ol{padding-left:22px} .tech li{margin:6px 0; max-width:74ch}
+  .muted{color:var(--faint); font-size:14px}
+  footer{color:var(--faint); font-size:13.5px; text-align:center; margin-top:30px}
+  @media print{ nav.jump,.os,.copy{display:none} body{background:#fff} section.block{break-inside:avoid-page} [data-os][hidden]{display:revert!important} }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="top">
+  <p class="eyebrow">Meridian Systems · Sales pipeline prototype</p>
+  <h1>Meridian Pipeline Intelligence</h1>
+  <p class="lede">Ask a plain-English question about the sales pipeline and get a direct answer, the exact data behind it, and a clear warning wherever the data is incomplete or an assumption was made.</p>
+  <div class="badges">
+    <span class="badge"><b>0</b> numbers written by AI</span>
+    <span class="badge">every figure traced to a <b>data row</b></span>
+    <span class="badge"><b>142</b> automated checks</span>
+  </div>
+</header>
+
+<nav class="jump" aria-label="Sections">
+  <ul>
+    <li class="for">Everyone</li>
+    <li><a href="#start">Open the app</a></li>
+    <li><a href="#tour">5-minute tour</a></li>
+    <li><a href="#trust">How it earns trust</a></li>
+    <li><a href="#findings">What it found</a></li>
+    <li><a href="#glossary">Glossary</a></li>
+    <li class="for">Technical</li>
+    <li><a href="#tech">How it's built</a></li>
+  </ul>
+</nav>
+
+<!-- ================================================================ START HERE -->
+<section class="block" id="start">
+  <p class="kicker">Start here · no technical background needed</p>
+  <h2>Open the app in your browser</h2>
+  <p class="intro">The app is a web page. To see it, you start it once from a terminal window, and then everything happens in your browser. You don't need to read or change any code. It takes about five minutes the first time.</p>
+
+  <div class="options">
+    <div class="option">
+      <span class="tag">Quickest</span>
+      <h4>Use the hosted link</h4>
+      <p>If you were sent a web link and password, open the link and enter the password (any username works). Nothing to install. The first load can take a few seconds while the server wakes up.</p>
+    </div>
+    <div class="option">
+      <span class="tag">From the zip file</span>
+      <h4>Run it on your computer</h4>
+      <p>Follow the steps below. It runs only on your machine, needs no account or password, and doesn't need the internet once installed.</p>
+    </div>
+  </div>
+
+  <p><b>Which computer are you using?</b></p>
+  <div class="os" role="group" aria-label="Operating system">
+    <button type="button" data-pick="mac" aria-pressed="true">Mac</button>
+    <button type="button" data-pick="win" aria-pressed="false">Windows</button>
+  </div>
+
+  <ol class="steps">
+    <li>
+      <h4>Open a terminal window</h4>
+      <div data-os="mac">
+        <p>Press <kbd>⌘ Command</kbd> + <kbd>Space</kbd>, type <b>Terminal</b>, and press <kbd>Return</kbd>. A window with a blinking cursor opens.</p>
+      </div>
+      <div data-os="win" hidden>
+        <p>Click the Start menu, type <b>PowerShell</b>, and press <kbd>Enter</kbd>. A window with a blinking cursor opens.</p>
+      </div>
+      <p class="why"><b>What is this?</b> A terminal is a window where you type commands instead of clicking. You'll paste in a few lines, one at a time, and press Enter after each.</p>
+    </li>
+
+    <li>
+      <h4>Check that Python is installed</h4>
+      <p>Python is the free software the app runs on. Paste this and press Enter:</p>
+      <div class="cmd" data-os="mac"><pre>python3 --version</pre><button type="button" class="copy">Copy</button></div>
+      <div class="cmd" data-os="win" hidden><pre>py --version</pre><button type="button" class="copy">Copy</button></div>
+      <p class="see"><b>You should see</b> something like <code>Python 3.9.6</code>. Any version 3.9 or higher is fine.</p>
+      <p class="why"><b>If you see "command not found" or an older version:</b> download Python from <a href="https://www.python.org/downloads/">python.org/downloads</a> and install it. <span data-os="win" hidden>On the first install screen, tick <b>"Add python.exe to PATH"</b>. </span>Then close the terminal, open a new one, and try again.</p>
+    </li>
+
+    <li>
+      <h4>Go to the project folder</h4>
+      <p>Unzip the file you received. You'll get a folder, usually called <code>meridian-pipeline-main</code>.</p>
+      <p>In the terminal, type <code>cd</code> followed by a space. Then <b>drag the folder from <span data-os="mac">Finder</span><span data-os="win" hidden>File Explorer</span> into the terminal window</b>; its location fills in automatically. Press Enter.</p>
+      <div class="cmd" data-os="mac"><pre>cd ~/Downloads/meridian-pipeline-main</pre><button type="button" class="copy">Copy</button></div>
+      <div class="cmd" data-os="win" hidden><pre>cd $HOME\Downloads\meridian-pipeline-main</pre><button type="button" class="copy">Copy</button></div>
+      <p class="why"><b>Why?</b> This tells the terminal which folder to work in. The example above works if the folder is in your Downloads.</p>
+    </li>
+
+    <li>
+      <h4>Set up the app (first time only)</h4>
+      <p>Paste these lines one at a time, pressing Enter after each. The last one takes about a minute and prints a lot of text; that's normal.</p>
+      <div class="cmd" data-os="mac"><pre>python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt</pre><button type="button" class="copy">Copy</button></div>
+      <div class="cmd" data-os="win" hidden><pre>py -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -r requirements.txt</pre><button type="button" class="copy">Copy</button></div>
+      <p class="why"><b>What does this do?</b> The first line makes a private space for the app inside its own folder, so nothing is installed elsewhere on your computer. The second switches into that space; you'll see <code>(.venv)</code> at the start of the line. The third downloads the one data library the app needs.</p>
+    </li>
+
+    <li>
+      <h4>Start the app</h4>
+      <div class="cmd"><pre>python app.py</pre><button type="button" class="copy">Copy</button></div>
+      <p class="see"><b>You should see</b> your web browser open to the app automatically, at <b>http://127.0.0.1:8765</b>. If it doesn't open, copy that address into your browser.</p>
+      <p class="why"><b>Keep the terminal window open</b> while you use the app; closing it stops the app. When you're finished, click the terminal and press <kbd>Ctrl</kbd> + <kbd>C</kbd>.</p>
+    </li>
+  </ol>
+
+  <h3>Opening it again later</h3>
+  <p>Open a terminal, go to the folder (step 3), then:</p>
+  <div class="cmd" data-os="mac"><pre>source .venv/bin/activate
+python app.py</pre><button type="button" class="copy">Copy</button></div>
+  <div class="cmd" data-os="win" hidden><pre>.venv\Scripts\Activate.ps1
+python app.py</pre><button type="button" class="copy">Copy</button></div>
+
+  <h3>If something goes wrong</h3>
+  <div class="tw"><table>
+    <thead><tr><th>What you see</th><th>What to do</th></tr></thead>
+    <tbody>
+      <tr><td><code>command not found</code> for <code>python3</code> or <code>py</code></td><td>Install Python from python.org (step 2), then open a <b>new</b> terminal window.</td></tr>
+      <tr><td>Windows: "running scripts is disabled on this system"</td><td>Paste <code>Set-ExecutionPolicy -Scope Process Bypass</code>, press Enter, then repeat the <code>Activate.ps1</code> line.</td></tr>
+      <tr><td><code>No such file or directory: requirements.txt</code></td><td>The terminal isn't in the project folder. Repeat step 3.</td></tr>
+      <tr><td><code>Address already in use</code></td><td>Something else is using that address. Run <code>python app.py --port 9000</code> and open http://127.0.0.1:9000.</td></tr>
+      <tr><td>The browser didn't open</td><td>Copy <b>http://127.0.0.1:8765</b> into your browser's address bar.</td></tr>
+      <tr><td><code>pip install</code> shows an error</td><td>Run <code>python -m pip install --upgrade pip</code>, then repeat the install line.</td></tr>
+    </tbody>
+  </table></div>
+  <p class="muted">The app needs no API key or account. Running locally, it can only be reached from your own computer.</p>
+</section>
+
+<!-- ================================================================ TOUR -->
+<section class="block" id="tour">
+  <p class="kicker">For everyone</p>
+  <h2>A 5-minute tour: what to click, and what to notice</h2>
+  <p class="intro">Suggested questions are listed on the left of the app, grouped as <b>Core queries</b>, <b>Follow-up examples</b> and <b>Try to break it</b>. Click one, or type your own.</p>
+
+  <div class="tour">
+    <div class="stop">
+      <div class="click"><small>Ask</small><span class="q">"How is the Enterprise segment tracking against quota this quarter?"</span></div>
+      <div class="notice"><b>Read as</b>, above the answer, shows how the question was understood before any number appears. The answer pairs bookings with open pipeline, because a third of the way into a quarter bookings alone always look alarming. Click <b>[A]</b> under Source data to see the exact deal row, with its line number in the file.</div>
+    </div>
+    <div class="stop">
+      <div class="click"><small>Open</small>Trust Flags, then Assumptions</div>
+      <div class="notice">Flags explain what could mislead you about <i>this</i> answer: here, that its only booking was really won last quarter. Assumptions list every definition the answer relies on.</div>
+    </div>
+    <div class="stop">
+      <div class="click"><small>Ask</small><span class="q">"Which reps are at risk of missing Q2?"</span></div>
+      <div class="notice">Drag the <b>coverage threshold</b> slider to test a safety margin, and sort by dollar gap. At 1.00x the chart matches the answer; other positions are labelled as what-ifs.</div>
+    </div>
+    <div class="stop">
+      <div class="click"><small>Ask</small><span class="q">"How does Q2 attainment compare to where we were at the same point in Q1?"</span></div>
+      <div class="notice">"Same point" can mean more than one thing, so the answer states how it was read and checks that the other reading gives the same result.</div>
+    </div>
+    <div class="stop">
+      <div class="click"><small>Click</small>"Show what a naive tool would say"</div>
+      <div class="notice">At the bottom of the core questions: the answer a quick AI tool would give from the same file, and exactly what it gets wrong.</div>
+    </div>
+    <div class="stop">
+      <div class="click"><small>Try to break it</small><span class="q">"Why is John Smith at risk?"</span> · <span class="q">"How is Lisa tracking against quota?"</span></div>
+      <div class="notice">There's no John Smith, so it refuses and lists the real reps. "Lisa" matches both a rep and a manager, so it asks which. It never guesses.</div>
+    </div>
+    <div class="stop">
+      <div class="click"><small>Click</small>The $1.99 M Bridge</div>
+      <div class="notice">The opening page. The two data extracts disagree about last quarter by $1.99 million, and the chart traces every dollar to specific deals.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ TRUST -->
+<section class="block" id="trust">
+  <p class="kicker">For everyone</p>
+  <h2>How the design earns trust</h2>
+  <p class="intro">Meridian's previous AI reporting tool produced wrong numbers and mixed up segments, and lost leadership's confidence. The likely cause: it let an AI model produce figures directly. Language models give the most plausible-sounding answer, and a plausible wrong number looks exactly like a right one. This prototype is designed so that can't happen, and so anyone can check it when in doubt.</p>
+
+  <div class="contrast">
+    <div class="bad"><p class="who">A quick AI tool, same file</p><q>Enterprise has closed $165,000 against a $3,650,000 Q2 quota: 4.5% attainment. Enterprise is well behind target.</q></div>
+    <div class="good"><p class="who">This tool</p><q>Enterprise has booked 4.5% of its Q2 quota, but with open pipeline it's at 1.03x: technically covered, with no room for slippage.</q></div>
+  </div>
+  <p class="muted">Both use the same numbers. Only one reaches the right conclusion, and shows the rows, formula and caveats behind it.</p>
+
+  <h3>Eight design choices, and where you'll see them</h3>
+  <div class="trust">
+    <div class="card">
+      <h4>1. The AI never produces a number</h4>
+      <p>Every figure is calculated by ordinary code from the deal records. At most, an AI model helps turn the question into a structured request, and every field it fills is checked. The version you're running uses no AI model at all.</p>
+      <p class="lbl">Why it matters</p><p>This removes the failure that cost the last tool its credibility.</p>
+    </div>
+    <div class="card">
+      <h4>2. Every answer shows its evidence</h4>
+      <p>The file, the date the data was pulled, the exact filters, every deal row with its line number, and the formula with its inputs.</p>
+      <p class="lbl">In the app</p><p class="inapp">Source data and Method sections; click any [A] or deal ID.</p>
+    </div>
+    <div class="card">
+      <h4>3. It shows how it understood you</h4>
+      <p>Before any number, the answer restates the question as the tool read it: which segment, rep and period.</p>
+      <p class="lbl">In the app</p><p class="inapp">The "Read as" line at the top of every answer.</p>
+    </div>
+    <div class="card">
+      <h4>4. Definitions are printed, not assumed</h4>
+      <p>What "this quarter", "at risk" and "same point" mean, and which data extract was used, appear on every answer that relies on them. If a leader defines them differently, they can see it immediately.</p>
+      <p class="lbl">In the app</p><p class="inapp">The Assumptions section.</p>
+    </div>
+    <div class="card">
+      <h4>5. It refuses rather than guesses</h4>
+      <p>Unknown people, ambiguous names, unsupported periods and forecasts are refused, with the reason and how to rephrase. A refusal costs a minute; a wrong number costs the tool.</p>
+      <p class="lbl">In the app</p><p class="inapp">Try the "Try to break it" questions.</p>
+    </div>
+    <div class="card">
+      <h4>6. It warns you about the data itself</h4>
+      <p>Trust Flags point out what could mislead you about this specific answer: deals moved between quarters, reused deal IDs, stale close dates, or reps short inside a healthy-looking total.</p>
+      <p class="lbl">In the app</p><p class="inapp">The Trust Flags section, open by default.</p>
+    </div>
+    <div class="card">
+      <h4>7. Missing data never becomes zero</h4>
+      <p>A blank deal value makes the figure "at least"; a missing quota makes a ratio "undefined"; a verdict too close to call says "unknown". Nothing is quietly filled in.</p>
+      <p class="lbl">Why it matters</p><p>Silent zeros are a quieter form of hallucination.</p>
+    </div>
+    <div class="card">
+      <h4>8. It is tested against known answers</h4>
+      <p>142 automated checks, including the core questions pinned to figures worked out independently from the data files, and runs on deliberately damaged copies of the data.</p>
+      <p class="lbl">Why it matters</p><p>Correctness is checked before anyone sees an answer, not after.</p>
+    </div>
+  </div>
+
+  <div class="callout">
+    <h4>Where it still falls short</h4>
+    <ul>
+      <li><b>Correct maths on flawed data is still flawed.</b> The tool makes data problems visible; it doesn't fix the CRM.</li>
+      <li><b>The definitions are the builder's, not yet Meridian's.</b> They need sign-off from the sales operations team.</li>
+      <li><b>It understands a limited set of phrasings.</b> It hasn't been tested on how Meridian's leaders actually ask questions, so some reasonable questions will be refused.</li>
+      <li><b>Evidence only helps if someone looks at it.</b> A reader who stops at the headline is relying on the design, not verifying it.</li>
+      <li><b>It's a prototype on sample data:</b> 10 reps, 92 deals, two data extracts, with no live CRM connection and no scale testing.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================================================================ FINDINGS -->
+<section class="block" id="findings">
+  <p class="kicker">For everyone</p>
+  <h2>What it found</h2>
+
+  <h3 style="margin-top:10px">Q1 isn't final: the two data extracts disagree by $1.99 million</h3>
+  <div class="figs">
+    <div><div class="sub">Q1 bookings, extract taken at Q1 close</div><div class="big">$6,041,000</div><div class="sub">51 deals · 102.0% of quota</div></div>
+    <div><div class="sub">Q1 bookings, extract taken May 2</div><div class="big">$4,050,000</div><div class="sub">32 deals · 68.4% of quota</div></div>
+  </div>
+  <div class="tw"><table>
+    <thead><tr><th>Why the totals differ</th><th class="n">Deals</th><th class="n">Amount</th></tr></thead>
+    <tbody>
+      <tr><td>Deal IDs reused for different deals</td><td class="n">12</td><td class="n">−$1,220,000</td></tr>
+      <tr><td>Close date moved into Q2</td><td class="n">3</td><td class="n">−$373,000</td></tr>
+      <tr><td>Won deal reverted to open pipeline</td><td class="n">3</td><td class="n">−$253,000</td></tr>
+      <tr><td>Won deal changed to Closed Lost</td><td class="n">1</td><td class="n">−$110,000</td></tr>
+      <tr><td>Deal value lowered</td><td class="n">1</td><td class="n">−$35,000</td></tr>
+      <tr><td><b>Unexplained</b></td><td class="n"></td><td class="n"><b>$0</b></td></tr>
+    </tbody>
+  </table></div>
+  <p class="muted">The tool reads a closed quarter from the extract taken at its close, and the current quarter from the latest extract, and says so on every answer.</p>
+
+  <h3>The three core questions</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Question</th><th>Answer</th></tr></thead>
+    <tbody>
+      <tr><td class="q">How is the Enterprise segment tracking against quota this quarter?</td><td>4.5% booked, but 1.03x with open pipeline: covered, with no room for slippage. Its only booking was won in Q1 and moved into Q2, and 2 of its 4 reps are short.</td></tr>
+      <tr><td class="q">Which reps are at risk of missing Q2?</td><td>8 of 10: closed-won plus open pipeline is below quota. Largest gap: Priya Patel, $260,000.</td></tr>
+      <tr><td class="q">How does Q2 attainment compare to where we were at the same point in Q1?</td><td>8.4% of quota against 21.3% at day 32. Excluding deals moved from Q1, Q2 is at 2.3%.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Definitions used</h3>
+  <ul>
+    <li><b>"This quarter"</b> means Q2 2026, because the data is current as of May 2, 2026.</li>
+    <li><b>"Same point"</b> means the same number of days into each quarter.</li>
+    <li><b>"At risk"</b> means closed-won plus open pipeline is below quota. Open pipeline is counted at full value, not weighted by stage.</li>
+  </ul>
+</section>
+
+<!-- ================================================================ GLOSSARY -->
+<section class="block" id="glossary">
+  <p class="kicker">For everyone</p>
+  <h2>Glossary</h2>
+  <p class="intro">Terms you'll see in the app, in plain language.</p>
+  <dl class="gloss">
+    <dt>Quota</dt><dd>The sales target for a rep or segment for the quarter.</dd>
+    <dt>Bookings / closed-won</dt><dd>Deals already won, counted at their value.</dd>
+    <dt>Attainment</dt><dd>Bookings divided by quota. 50% means half the target is already won.</dd>
+    <dt>Open pipeline</dt><dd>Deals still being worked (not yet won or lost) that are expected to close this quarter.</dd>
+    <dt>Coverage</dt><dd>Bookings plus open pipeline, divided by quota. 1.00x means that if every open deal closed, the target would be exactly met.</dd>
+    <dt>Segment</dt><dd>A customer group: Enterprise, Mid-Market or SMB.</dd>
+    <dt>Extract / snapshot</dt><dd>A copy of the sales data taken on a particular date. This data has two: one at the end of Q1, and one on May 2.</dd>
+    <dt>Trust Flag</dt><dd>A warning about something in the data that could mislead you about a specific answer.</dd>
+    <dt>Naive tool</dt><dd>For comparison only: the answer a quick AI tool would give by taking the file at face value.</dd>
+  </dl>
+</section>
+
+<!-- ================================================================ TECH -->
+<section class="block tech" id="tech">
+  <p class="kicker">For technical reviewers</p>
+  <h2>How it's built</h2>
+  <p>Python standard-library web server plus pandas. No web framework, no API key required.</p>
+
+  <h3>From question to answer</h3>
+  <ol>
+    <li><b>Parse</b> (<code>meridian/query.py</code>): question → structured query, fields as written.</li>
+    <li><b>Validate</b> (<code>validate.py</code>): check against the rep roster and <code>snapshots.json</code>, or reject with every problem listed. No deal data is read yet.</li>
+    <li><b>Select</b> (<code>selection.py</code>): rows chosen by readable filters; rows failing load checks are set aside and named, never counted.</li>
+    <li><b>Compute</b> (<code>metrics.py</code>): figures, formulas, assumptions and flags.</li>
+    <li><b>Render</b> (<code>serialize.py</code>): JSON for the page, which formats and computes nothing itself.</li>
+  </ol>
+  <p>If <code>ANTHROPIC_API_KEY</code> is set, Claude fills step 1's fields only and never sees a deal value. By default a rule-based parser is used.</p>
+
+  <h3>Project layout</h3>
+  <div class="tw"><table>
+    <tbody>
+      <tr><td><code>app.py</code></td><td>Web server; opens the browser app.</td></tr>
+      <tr><td><code>web/index.html</code></td><td>The browser app (single page).</td></tr>
+      <tr><td><code>meridian/</code></td><td>The engine: parsing, validation, row selection, metrics, flags, reconciliation.</td></tr>
+      <tr><td><code>Q1/</code>, <code>Q2/</code>, <code>snapshots.json</code></td><td>The data extracts, and which date each one represents.</td></tr>
+      <tr><td><code>tests/</code></td><td>142 tests: golden answers, validation, edge cases, rendering, the HTTP app.</td></tr>
+      <tr><td><code>ask.py</code></td><td>The same answers in the terminal: <code>python ask.py "Why is Priya at risk?"</code></td></tr>
+      <tr><td><code>Dockerfile</code>, <code>fly.toml</code></td><td>Deployment to Fly.io.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Run the tests</h3>
+  <div class="cmd"><pre>pip install pytest
+python -m pytest -q</pre><button type="button" class="copy">Copy</button></div>
+
+  <h3>Deploy (Fly.io)</h3>
+  <div class="cmd"><pre>fly launch --no-deploy --copy-config
+fly secrets set MERIDIAN_PASSWORD=&lt;password&gt;   <span class="note"># basic auth, any username</span>
+fly deploy</pre><button type="button" class="copy">Copy</button></div>
+</section>
+
+<footer>Meridian Pipeline Intelligence · prototype on sample data</footer>
+</div>
+
+<script>
+  (function () {
+    var pick = /Win/i.test(navigator.platform || navigator.userAgent) ? "win" : "mac";
+    function setOS(os) {
+      document.querySelectorAll("[data-os]").forEach(function (el) { el.hidden = el.dataset.os !== os; });
+      document.querySelectorAll("[data-pick]").forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.pick === os ? "true" : "false"); });
+    }
+    document.querySelectorAll("[data-pick]").forEach(function (b) {
+      b.addEventListener("click", function () { setOS(b.dataset.pick); });
+    });
+    setOS(pick);
+
+    document.querySelectorAll(".copy").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var pre = btn.parentNode.querySelector("pre").cloneNode(true);
+        pre.querySelectorAll(".note").forEach(function (n) { n.remove(); });
+        var text = pre.textContent.replace(/\s+$/gm, "").trim();
+        function done() { btn.textContent = "Copied"; setTimeout(function () { btn.textContent = "Copy"; }, 1500); }
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(text).then(done, fallback);
+        } else { fallback(); }
+        function fallback() {
+          var ta = document.createElement("textarea");
+          ta.value = text; document.body.appendChild(ta); ta.select();
+          try { document.execCommand("copy"); done(); } catch (e) { btn.textContent = "Select and copy"; }
+          ta.remove();
+        }
+      });
+    });
+  })();
+</script>
+</body>
+</html>

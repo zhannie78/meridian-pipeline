@@ -6,6 +6,7 @@
 !/fly.toml
 !/requirements.txt
 !/README.md
+!/README.html
 !/app.py
 !/ask.py
 !/snapshots.json
