@@ -78,8 +78,8 @@ The above instructions lets you run the local version of the application.
 I've made it easy for non-technical business users to access via the following link by deploying a hosted web app: 
 
 App Link: https://meridian-pipeline.fly.dev/ \
-Password: meridian-rpGX27WYLetp \
-Optional: For access to the private github repo, please provide me the github email/usernames of those interested
+Password: **meridian-rpGX27WYLetp** \
+
 ## How it works
 
 1. **Parse** (`query.py`): question → structured query, fields as written.
