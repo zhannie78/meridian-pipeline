@@ -80,9 +80,9 @@ The app needs no API key and no internet connection once installed. It is only r
 4. **Compute** (`metrics.py`): figures, formulas, assumptions, flags.
 5. **Render** (`serialize.py`): JSON for the page, which formats and computes nothing itself.
 
-Starts with query interpretation layer and then business metric layer. /
-Deterministic calculations. No LLM generated arithmetic. Hard-coded support for the three required query patterns. /
-LLM used only for interpreting the question and rendering the answer and explanation. /
+Starts with query interpretation layer and then business metric layer. \
+Deterministic calculations. No LLM generated arithmetic. Hard-coded support for the three required query patterns. \
+LLM used only for interpreting the question and rendering the answer and explanation. \
 Source traceability. Explicit flags.
 
 ## Key finding: Q1 isn't final
