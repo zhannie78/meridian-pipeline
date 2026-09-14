@@ -73,9 +73,9 @@ Leave the terminal window open while you use the app. To stop it, click the term
 The app needs no API key and no internet connection once installed. It is only reachable from your own computer. This is the local application version. 
 
 ## Non-Technical Version
-The above instructions lets you run an app that needs no API key and no internet connection once installed. It is only reachable from your own computer. This is the local application version. 
+The above instructions lets you run an app that needs no API key and no internet connection once installed. It is only reachable from your own computer. That was the local application version. 
 
-For a hosted web application, I've made it easy for non-technical business users to access via the following link: 
+I've made it easy for non-technical business users to access via the following link by deploying a hosted web app: 
 
 App Link: https://meridian-pipeline.fly.dev/ \
 Password: meridian-rpGX27WYLetp \
