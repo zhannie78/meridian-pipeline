@@ -78,7 +78,7 @@ The above instructions lets you run the local version of the application.
 I've made it easy for non-technical business users to access via the following link by deploying a hosted web app: 
 
 App Link: https://meridian-pipeline.fly.dev/ \
-Password: **meridian-rpGX27WYLetp** \
+Password: **meridian-rpGX27WYLetp** 
 
 ## How it works
 
