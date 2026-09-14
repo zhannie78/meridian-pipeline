@@ -97,12 +97,12 @@ The two extracts disagree on Q1 bookings: $6,041,000 at Q1 close vs $4,050,000 o
 
 ## Answer structure
 
-- Direct answer
-- Supporting Metrics
-- Source Data
-- Method (including Calculations)
-- Assumptions
-- Trust Flags
+1. Direct answer
+2. Supporting Metrics
+3. Source Data
+4. Method (including Calculations)
+5. Assumptions
+6. Trust Flags
 
 ## Tests
 
