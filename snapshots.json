@@ -1,0 +1,16 @@
+{
+  "snapshots": {
+    "at_q1_close": {
+      "deals": "Q1/q1_deals.csv",
+      "reps": "Q1/q1_reps.csv",
+      "as_of": "2026-03-31",
+      "as_of_basis": "assumed: the brief says Q1 is final but does not date this extract; it contains nothing created after 2026-03-15"
+    },
+    "live": {
+      "deals": "Q2/q2_deals.csv",
+      "reps": "Q2/q2_reps.csv",
+      "as_of": "2026-05-02",
+      "as_of_basis": "stated in the client brief"
+    }
+  }
+}

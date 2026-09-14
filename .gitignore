@@ -1,0 +1,21 @@
+# Whitelist: only the files below are tracked. Everything else in this folder stays local.
+/*
+!/.gitignore
+!/.dockerignore
+!/Dockerfile
+!/fly.toml
+!/requirements.txt
+!/README.md
+!/app.py
+!/ask.py
+!/snapshots.json
+!/meridian/
+!/web/
+!/Q1/
+!/Q2/
+!/tests/
+web/*
+!web/index.html
+__pycache__/
+*.pyc
+.DS_Store

@@ -1,0 +1,9 @@
+*
+!requirements.txt
+!app.py
+!ask.py
+!snapshots.json
+!meridian/*.py
+!web/index.html
+!Q1/*.csv
+!Q2/*.csv
