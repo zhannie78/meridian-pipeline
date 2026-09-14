@@ -70,9 +70,12 @@ Leave the terminal window open while you use the app. To stop it, click the term
 | The browser didn't open | Copy http://127.0.0.1:8765 into your browser. |
 | `pip install` fails | Run `python -m pip install --upgrade pip`, then try again. |
 
-The app needs no API key and no internet connection once installed. It is only reachable from your own computer. This is the local application version. \
+The app needs no API key and no internet connection once installed. It is only reachable from your own computer. This is the local application version. 
 
-For a hosted web application, I've made it easy for non-technical business users to access via the following link: \
+## Non-Technical Version
+The above instructions lets you run an app that needs no API key and no internet connection once installed. It is only reachable from your own computer. This is the local application version. 
+
+For a hosted web application, I've made it easy for non-technical business users to access via the following link: 
 
 App Link: https://meridian-pipeline.fly.dev/ \
 Password: meridian-rpGX27WYLetp \
