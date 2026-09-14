@@ -4,24 +4,25 @@ Ask a plain-English question about the sales pipeline and get a direct answer, t
 
 > **Easier to read:** open **`README.html`** in this folder (double-click it). It has the same content, formatted, with copy buttons for each command.
 
-**Contents:** [Open the app](#open-the-app-in-your-browser) · [5-minute tour](#a-5-minute-tour) · [How the design earns trust](#how-the-design-earns-trust) · [What it found](#what-it-found) · [Glossary](#glossary) · [How it's built](#how-its-built-technical)
+**Contents:** [Hosted app](#use-the-hosted-app) · [Run it on your computer](#run-it-on-your-own-computer) · [5-minute tour](#a-5-minute-tour) · [How the design earns trust](#how-the-design-earns-trust) · [What it found](#what-it-found) · [Glossary](#glossary) · [How it's built](#how-its-built-technical)
 
 ---
 
-## Open the app in your browser
+## Use the hosted app
 
-*No technical background needed.* The app is a web page. You start it once from a terminal window, and then everything happens in your browser. It takes about five minutes the first time.
+> ### ▶ Open it in your browser, nothing to install
+>
+> **App link:** https://meridian-pipeline.fly.dev/
+>
+> **Password:** **meridian-rpGX27WYLetp** (any username works)
+>
+> The first load can take a few seconds while the server wakes up.
 
-### Quickest: use the hosted app (nothing to install)
+---
 
-- **App link:** https://meridian-pipeline.fly.dev/
-- **Password:** **meridian-rpGX27WYLetp** (any username works)
+## Run it on your own computer
 
-The first load can take a few seconds while the server wakes up.
-
-### Or run it on your own computer
-
-These steps run the same app locally. It needs no API key, and no internet connection once installed.
+*Optional, and no technical background needed.* This runs the same app locally, from the downloaded zip. You start it once from a terminal window, and then everything happens in your browser. It takes about five minutes the first time, needs no API key, and needs no internet connection once installed.
 
 #### 1. Open a terminal window
 
@@ -201,8 +202,6 @@ Python standard-library web server plus pandas. No web framework, no API key.
 3. **Select** (`selection.py`): rows chosen by readable filters; rows failing load checks are set aside and named, never counted.
 4. **Compute** (`metrics.py`): figures, formulas, assumptions, flags.
 5. **Render** (`serialize.py`): JSON for the page, which formats and computes nothing itself.
-
-If `ANTHROPIC_API_KEY` is set, Claude fills step 1's fields only and never sees a deal value. By default a rule-based parser is used.
 
 | Path | What it is |
 |---|---|
