@@ -95,12 +95,14 @@ The two extracts disagree on Q1 bookings: $6,041,000 at Q1 close vs $4,050,000 o
 - **Reps at risk:** 8 of 10 (won + open pipeline < quota). Largest gap: Priya Patel, $260,000.
 - **Q2 vs same point in Q1:** 8.4% vs 21.3% of quota at day 32; 2.3% excluding deals moved from Q1.
 
-## Assumptions
+## Answer structure
 
-- "This quarter" = Q2 2026 (data as of 2026-05-02).
-- "Same point" = same elapsed day of each quarter.
-- "At risk" = closed-won + open pipeline below quota; pipeline not probability-weighted.
-- Missing data is never treated as zero: figures become "at least" or "undefined".
+- Direct answer
+- Supporting Metrics
+- Source Data
+- Method (including Calculations)
+- Assumptions
+- Trust Flags
 
 ## Tests
 
